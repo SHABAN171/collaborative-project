@@ -1,3 +1,33 @@
+<?php
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "elevate";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $conn->real_escape_string($_POST['username']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+
+    $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>alert('Registration successful!'); window.location.href='login.php';</script>";
+    } else {
+        echo "<script>alert('Error: " . $conn->error . "');</script>";
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +78,7 @@
     <div class="container" style="margin-top: 100px;">
         <div class="signup-form">
             <h2 class="text-center mb-4">Create an Account</h2>
-            <form id="signupForm">
+            <form id="signupForm" method="POST" action="">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required>
@@ -78,4 +108,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
     
 </body>
-</html> 
+</html>

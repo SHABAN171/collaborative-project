@@ -1,3 +1,38 @@
+<?php
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "elevate";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $conn->real_escape_string($_POST['email']);
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM users WHERE email='$email'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['password'])) {
+            echo "<script>alert('Login successful!'); window.location.href='dashboard.php';</script>";
+        } else {
+            echo "<script>alert('Invalid password.');</script>";
+        }
+    } else {
+        echo "<script>alert('No account found with this email.');</script>";
+    }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +72,7 @@
                         <a class="nav-link active" href="login.php">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="signup.php">Register</a>
+                        <a class="nav-link" href="signup.html">Register</a>
                     </li>
                 </ul>
             </div>
@@ -48,7 +83,7 @@
     <div class="container" style="margin-top: 100px;">
         <div class="login-form">
             <h2 class="text-center mb-4">Login to Your Account</h2>
-            <form id="loginForm" method="post" action="process-login.php">
+            <form id="loginForm" method="POST" action="">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
                     <input type="email" class="form-control" id="email" name="email" required>
